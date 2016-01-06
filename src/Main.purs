@@ -1,7 +1,6 @@
 module Main where
 
 import Prelude
-import Data.List (replicate)
 import Data.Maybe
 import Data.Tuple
 import Control.Monad.Eff
@@ -10,6 +9,7 @@ import Data.Foldable (foldlDefault)
 import Control.Monad.Eff.Console
 
 import qualified Data.String as S
+import qualified Data.List as L
 
 import qualified Thermite as T
 import qualified React as R
@@ -26,29 +26,47 @@ import qualified DOM.HTML.Types as DOM
 -- adapt the description length to the amount of minutes passed
 crumbify :: String -> Int -> Tuple String String
 crumbify description minutes =
-  let separatedDots = replicate minutes "."
+  let separatedDots = L.replicate minutes "."
       dots = foldlDefault (++) "" separatedDots
       concatenated = description ++ dots
   in Tuple (S.take minutes concatenated) (S.drop minutes description)
 
-data Action = Submit Int | Discard
+data Action = Submit Int | Discard | SetCurrent String
 
-type State = { counter :: Int }
+type Record = { description :: String }
+
+type State = {
+  counter :: Int,
+  records :: L.List Record,
+  current :: String
+  }
 
 initialState :: State
-initialState = { counter: 0 }
+initialState = {
+  counter: 0,
+  records: L.Nil,
+  current :: ""
+  }
 
 render :: T.Render State _ Action
 render dispatch _ state _ = [
-  R.input [] [],
-  R.button [RP.onClick \ _ -> dispatch (Submit state.counter)] [ R.text "Submit" ],
-  R.button [RP.onClick \ _ -> dispatch Discard] [ R.text "Discard" ]
+  R.input [
+      RP.value state.current,
+      RP.onChange \ e -> dispatch (SetCurrent e.target.value)
+      ] [],
+  R.button [
+    RP.onClick \ _ -> dispatch (Submit state.counter)] [
+    R.text "Submit" ],
+  R.button [
+    RP.onClick \ _ -> dispatch Discard] [
+    R.text "Discard" ]
 ]
 
 performAction :: T.PerformAction _ State _ Action
-performAction (Submit time) _ state update = update $ state { counter = newCounter }
+performAction (Submit time) _ state update = update $ state { counter = newCounter, records = L.Cons state.current state.records, current = "" }
   where newCounter = state.counter + time
-performAction Discard _ state update = update $ state { counter = 0 }
+performAction Discard _ state update = update $ state { counter = 0, current = "" }
+performAction (SetCurrent desc) _ state update = update $ state { current = desc }
 
 spec :: T.Spec _ State _ Action
 spec = T.simpleSpec performAction render
