@@ -1,12 +1,15 @@
 module Main where
 
-
 import Prelude
-import Data.List( replicate, take, drop )
+import Data.List (replicate)
 import Data.Maybe
 import Data.Tuple
 import Control.Monad.Eff
-import Data.Nullable( toMaybe )
+import Data.Nullable (toMaybe)
+import Data.Foldable (foldlDefault)
+import Control.Monad.Eff.Console
+
+import qualified Data.String as S
 
 import qualified Thermite as T
 import qualified React as R
@@ -17,16 +20,16 @@ import qualified DOM as DOM
 import qualified DOM.HTML as DOM
 import qualified DOM.HTML.Document as DOM
 import qualified DOM.HTML.Window as DOM
-import qualified DOM.Node.Document as DOM
 import qualified DOM.Node.Types as DOM
 import qualified DOM.HTML.Types as DOM
 
 -- adapt the description length to the amount of minutes passed
 crumbify :: String -> Int -> Tuple String String
 crumbify description minutes =
-  let dots = replicate minutes '.'
+  let separatedDots = replicate minutes "."
+      dots = foldlDefault (++) "" separatedDots
       concatenated = description ++ dots
-  in Tuple (take minutes concatenated) (drop minutes description)
+  in Tuple (S.take minutes concatenated) (S.drop minutes description)
 
 data Action = Submit Int | Discard
 
@@ -54,15 +57,20 @@ interface :: R.ReactElement
 interface = R.createFactory component {}
   where component = T.createClass spec initialState
 
-getBody :: Eff (dom :: DOM.DOM) (Maybe DOM.Element)
+getBody :: forall eff. Eff (dom :: DOM.DOM | eff) (Maybe DOM.Element)
 getBody = do
   document <- DOM.window >>= DOM.document
   htmlElement <- DOM.body document
   return (DOM.htmlElementToElement <$> (toMaybe htmlElement))
 
-main :: Eff (dom :: DOM.DOM) Unit
-main = do
-  Just body <- getBody
-  R.render interface body
-  return unit
+renderOrPass :: forall eff. Maybe DOM.Element -> Eff ( dom :: DOM.DOM | eff) (Maybe R.ReactElement)
+renderOrPass (Just body) = Just <$> R.render interface body
+renderOrPass Nothing   = pure Nothing
 
+main :: Eff (dom :: DOM.DOM, console :: CONSOLE) (Maybe R.ReactElement)
+main = do
+  maybeBody <- getBody
+  if isNothing maybeBody
+    then error "no body found"
+    else log "found body"
+  renderOrPass maybeBody
