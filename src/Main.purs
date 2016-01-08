@@ -59,7 +59,7 @@ render dispatch _ state _ = [
       R.div [RP.className "container"] [
           R.input [
               RP.value state.current,
-              RP.onChange \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value)
+              RP.onInput \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value)
               ] [],
           R.button [RP.onClick \ _ -> dispatch (Submit state.counter)] [R.text "Submit" ],
           R.button [RP.onClick \ _ -> dispatch Discard] [R.text "Discard" ],
