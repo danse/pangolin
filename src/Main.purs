@@ -4,12 +4,14 @@ import Prelude
 import Data.Maybe
 import Data.Tuple
 import Control.Monad.Eff
-import Data.Nullable (toMaybe)
-import Data.Foldable (foldlDefault)
+import Data.Nullable( toMaybe )
+import Data.Foldable( foldlDefault, foldrDefault )
+import Unsafe.Coerce( unsafeCoerce )
 import Control.Monad.Eff.Console
 
 import qualified Data.String as S
 import qualified Data.List as L
+import qualified Data.Array as A
 
 import qualified Thermite as T
 import qualified React as R
@@ -45,25 +47,25 @@ initialState :: State
 initialState = {
   counter: 0,
   records: L.Nil,
-  current :: ""
+  current: ""
   }
+
+listToArray :: forall a. L.List a -> Array a
+listToArray l = foldrDefault A.cons [] l
 
 render :: T.Render State _ Action
 render dispatch _ state _ = [
   R.input [
       RP.value state.current,
-      RP.onChange \ e -> dispatch (SetCurrent e.target.value)
+      RP.onChange \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value)
       ] [],
-  R.button [
-    RP.onClick \ _ -> dispatch (Submit state.counter)] [
-    R.text "Submit" ],
-  R.button [
-    RP.onClick \ _ -> dispatch Discard] [
-    R.text "Discard" ]
+  R.button [RP.onClick \ _ -> dispatch (Submit state.counter)] [R.text "Submit" ],
+  R.button [RP.onClick \ _ -> dispatch Discard] [R.text "Discard" ],
+  R.div [] (listToArray ((\ r -> R.div [][R.text r.description]) <$> state.records))
 ]
 
 performAction :: T.PerformAction _ State _ Action
-performAction (Submit time) _ state update = update $ state { counter = newCounter, records = L.Cons state.current state.records, current = "" }
+performAction (Submit time) _ state update = update $ state { counter = newCounter, records = L.Cons ({ description: state.current }) state.records, current = "" }
   where newCounter = state.counter + time
 performAction Discard _ state update = update $ state { counter = 0, current = "" }
 performAction (SetCurrent desc) _ state update = update $ state { current = desc }
