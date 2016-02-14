@@ -59,14 +59,20 @@ render dispatch _ state _ = [
       R.div [RP.className "container"] [
           R.input [
               RP.value state.current,
-              RP.onInput \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value)
+              RP.onInput \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value),
+              RP.onKeyUp \e -> handleKeyPress (unsafeCoerce e).keyCode
               ] [],
-          R.button [RP.onClick \ _ -> dispatch (Submit state.counter)] [R.text "Submit" ],
+          R.button [RP.onClick \ _ -> dispatch submit] [R.text "Submit" ],
           R.button [RP.onClick \ _ -> dispatch Discard] [R.text "Discard" ],
           R.div [] (listToArray ((\ r -> R.div [][R.text r.description]) <$> state.records))
           ]
       ]
   ]
+  where submit = Submit state.counter
+        handleKeyPress :: Int -> _
+        handleKeyPress 13 = dispatch submit
+        handleKeyPress _  = pure unit
+
 
 performAction :: T.PerformAction _ State _ Action
 performAction (Submit time) _ state update = update $ state { counter = newCounter, records = L.Cons { description: state.current } state.records, current = "" }
