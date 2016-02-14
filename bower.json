@@ -22,6 +22,7 @@
     "purescript-strings": "~0.7.1",
     "purescript-foldable-traversable": "~0.4.2",
     "react": "~0.14.5",
-    "purescript-unsafe-coerce": "~0.1.0"
+    "purescript-unsafe-coerce": "~0.1.0",
+    "purescript-timers": "~1.0.0"
   }
 }

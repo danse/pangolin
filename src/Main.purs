@@ -8,6 +8,7 @@ import Data.Nullable( toMaybe )
 import Data.Foldable( foldlDefault, foldrDefault )
 import Unsafe.Coerce( unsafeCoerce )
 import Control.Monad.Eff.Console
+import DOM.Timer
 
 import qualified Data.String as S
 import qualified Data.List as L
@@ -25,6 +26,13 @@ import qualified DOM.HTML.Window as DOM
 import qualified DOM.Node.Types as DOM
 import qualified DOM.HTML.Types as DOM
 
+
+-- copied from
+-- https://github.com/purescript-contrib/purescript-react/blob/ffb8e61d5dc8656c8ac5d69be69046423302bfd0/src/React/DOM/Props.purs#L358
+-- because this event is not there yet
+onLoad :: forall eff props state result. (R.Event -> R.EventHandlerContext eff props state result) -> RP.Props
+onLoad f = RP.unsafeMkProps "onLoad" (R.handle f)
+
 -- adapt the description length to the amount of minutes passed
 crumbify :: String -> Int -> Tuple String String
 crumbify description minutes =
@@ -33,7 +41,7 @@ crumbify description minutes =
       concatenated = description ++ dots
   in Tuple (S.take minutes concatenated) (S.drop minutes description)
 
-data Action = Submit Int | Discard | SetCurrent String
+data Action = Submit Int | Discard | SetCurrent String | StartTimer
 
 type Record = { description :: String }
 
@@ -60,7 +68,8 @@ render dispatch _ state _ = [
           R.input [
               RP.value state.current,
               RP.onInput \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value),
-              RP.onKeyUp \e -> handleKeyPress (unsafeCoerce e).keyCode
+              RP.onKeyUp \e -> handleKeyPress (unsafeCoerce e).keyCode,
+              onLoad \e -> dispatch StartTimer
               ] [],
           R.button [RP.onClick \ _ -> dispatch submit] [R.text "Submit" ],
           R.button [RP.onClick \ _ -> dispatch Discard] [R.text "Discard" ],
@@ -75,10 +84,16 @@ render dispatch _ state _ = [
 
 
 performAction :: T.PerformAction _ State _ Action
-performAction (Submit time) _ state update = update $ state { counter = newCounter, records = L.Cons { description: state.current } state.records, current = "" }
-  where newCounter = state.counter + time
+performAction (Submit time) _ state update = update $ state { counter = 0, records = L.Cons { description: desc } state.records, current = "" }
+  where desc = (show state.counter) ++" "++ state.current
 performAction Discard _ state update = update $ state { counter = 0, current = "" }
 performAction (SetCurrent desc) _ state update = update $ state { current = desc }
+performAction StartTimer _ state update = do
+  interval 1000 (do
+                     update $ state { counter=state.counter+1}
+                     log $ show state.counter
+                )
+  return unit
 
 spec :: T.Spec _ State _ Action
 spec = T.simpleSpec performAction render
