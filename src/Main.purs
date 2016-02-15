@@ -25,27 +25,17 @@ import qualified DOM.HTML.Window as DOM
 import qualified DOM.Node.Types as DOM
 import qualified DOM.HTML.Types as DOM
 
--- adapt the description length to the amount of minutes passed
-crumbify :: String -> Int -> Tuple String String
-crumbify description minutes =
-  let separatedDots = L.replicate minutes "."
-      dots = foldlDefault (++) "" separatedDots
-      concatenated = description ++ dots
-  in Tuple (S.take minutes concatenated) (S.drop minutes description)
-
-data Action = Submit Int | Discard | SetCurrent String
+data Action = Submit | Discard | SetCurrent String
 
 type Record = { description :: String }
 
 type State = {
-  counter :: Int,
   records :: L.List Record,
   current :: String
   }
 
 initialState :: State
 initialState = {
-  counter: 0,
   records: L.Nil,
   current: ""
   }
@@ -61,7 +51,7 @@ render dispatch _ state _ = [
               RP.value state.current,
               RP.onInput \ e -> dispatch (SetCurrent (unsafeCoerce e).target.value)
               ] [],
-          R.button [RP.onClick \ _ -> dispatch (Submit state.counter)] [R.text "Submit" ],
+          R.button [RP.onClick \ _ -> dispatch Submit] [R.text "Submit" ],
           R.button [RP.onClick \ _ -> dispatch Discard] [R.text "Discard" ],
           R.div [] (listToArray ((\ r -> R.div [][R.text r.description]) <$> state.records))
           ]
@@ -69,9 +59,8 @@ render dispatch _ state _ = [
   ]
 
 performAction :: T.PerformAction _ State _ Action
-performAction (Submit time) _ state update = update $ state { counter = newCounter, records = L.Cons { description: state.current } state.records, current = "" }
-  where newCounter = state.counter + time
-performAction Discard _ state update = update $ state { counter = 0, current = "" }
+performAction Submit _ state update = update $ state { records = L.Cons { description: state.current } state.records, current = "" }
+performAction Discard _ state update = update $ state { current = "" }
 performAction (SetCurrent desc) _ state update = update $ state { current = desc }
 
 spec :: T.Spec _ State _ Action
