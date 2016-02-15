@@ -4,7 +4,6 @@ node_modules/
 output/
 .psci*
 src/.webpack.js
-app.js
 style/.cabal-sandbox
 style/cabal.sandbox.config
 style/dist
