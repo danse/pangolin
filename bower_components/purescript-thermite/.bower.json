@@ -1,0 +1,35 @@
+{
+  "name": "purescript-thermite",
+  "authors": [
+    "Phil Freeman <paf31@cantab.net>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/paf31/purescript-thermite.git"
+  },
+  "dependencies": {
+    "purescript-dom": "^0.2.6",
+    "purescript-profunctor-lenses": "~0.3.0",
+    "purescript-react": "^0.5.0"
+  },
+  "homepage": "https://github.com/paf31/purescript-thermite",
+  "version": "0.12.1",
+  "_release": "0.12.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.12.1",
+    "commit": "1a980ba1fb09f5750529dfa1118a6b7cb1fbab93"
+  },
+  "_source": "git://github.com/paf31/purescript-thermite.git",
+  "_target": "~0.12.1",
+  "_originalSource": "purescript-thermite",
+  "_direct": true
+}

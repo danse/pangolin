@@ -1,0 +1,45 @@
+{
+  "name": "purescript-lists",
+  "homepage": "https://github.com/purescript/purescript-lists",
+  "authors": [
+    "Phil Freeman <paf31@cantab.net>"
+  ],
+  "description": "Linked lists",
+  "keywords": [
+    "purescript"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript/purescript-lists.git"
+  },
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "test",
+    "bower.json",
+    "package.json"
+  ],
+  "dependencies": {
+    "purescript-foldable-traversable": "^0.4.0",
+    "purescript-lazy": "^0.4.0",
+    "purescript-unfoldable": "^0.4.0"
+  },
+  "devDependencies": {
+    "purescript-assert": "^0.1.0",
+    "purescript-console": "^0.1.0"
+  },
+  "version": "0.7.7",
+  "_release": "0.7.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.7.7",
+    "commit": "25cf9dc7b94d712c0078b1375f7693669f9249e1"
+  },
+  "_source": "git://github.com/paf31/purescript-lists.git",
+  "_target": "~0.7.7",
+  "_originalSource": "purescript-lists",
+  "_direct": true
+}

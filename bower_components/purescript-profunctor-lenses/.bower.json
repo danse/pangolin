@@ -1,0 +1,38 @@
+{
+  "name": "purescript-profunctor-lenses",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript-contrib/purescript-profunctor-lenses.git"
+  },
+  "devDependencies": {
+    "purescript-console": "^0.1.0"
+  },
+  "dependencies": {
+    "purescript-const": "~0.5.0",
+    "purescript-coproducts": "~0.4.0",
+    "purescript-functors": "~0.1.0",
+    "purescript-identity": "~0.4.0",
+    "purescript-lists": "~0.7.0",
+    "purescript-maps": "~0.5.2",
+    "purescript-profunctor": "~0.3.0",
+    "purescript-sets": "~0.5.1",
+    "purescript-unsafe-coerce": "~0.1.0"
+  },
+  "homepage": "https://github.com/paf31/purescript-profunctor-lenses",
+  "version": "0.3.5",
+  "_release": "0.3.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.5",
+    "commit": "e6b0fabbeafb3cd1681c6427ea87229a893d6cc1"
+  },
+  "_source": "git://github.com/paf31/purescript-profunctor-lenses.git",
+  "_target": "~0.3.0",
+  "_originalSource": "purescript-profunctor-lenses"
+}
